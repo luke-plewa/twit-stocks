@@ -1,2 +1,3 @@
 class Predictor
+
 end

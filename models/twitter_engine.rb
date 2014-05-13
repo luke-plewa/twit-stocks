@@ -1,4 +1,4 @@
-require 'twitter'
+require "twitter"
 
 class TwitterEngine
 
@@ -20,4 +20,5 @@ class TwitterEngine
     end
     tweets
   end
+
 end
