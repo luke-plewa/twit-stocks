@@ -1,7 +1,7 @@
 require 'twitter'
 
 class TwitterEngine
-  def self.print_search
+  def self.print_search search_string
     client = Twitter::REST::Client.new do |config|
       config.consumer_key        = "QpxDmEy2sfNN4MNzKXihk0GwQ"
       config.consumer_secret     = "vlMiEiwYA3y1iw00jwoAHoo7q33v7UX1vaPn73Dq6zLPX02oGI"
@@ -9,7 +9,7 @@ class TwitterEngine
       config.access_token_secret = "q4KBVMmiRQkgR2jE9cZHeQjZeXtU7FDABimiexQoEr2mo"
     end
 
-    client.search("Gameofthrones", :result_type => "recent").take(3).each do |tweet|
+    client.search(search_string, :result_type => "recent").take(3).each do |tweet|
       puts tweet.text
     end
   end
