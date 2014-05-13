@@ -14,11 +14,10 @@ class TwitterEngine
   end
 
   def print_search search_string
-
-    client.search(search_string, :result_type => "recent").take(3).each do |tweet|
+    tweets = client.search(search_string, :result_type => "recent").take(3)
+    tweets.each do |tweet|
       puts tweet.text
     end
-
-    true
+    tweets
   end
 end
