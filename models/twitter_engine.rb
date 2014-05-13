@@ -13,8 +13,12 @@ class TwitterEngine
     end
   end
 
+  def get_tweets search_string
+    client.search(search_string, result_type: "recent")
+  end
+
   def print_search search_string
-    tweets = client.search(search_string, :result_type => "recent").take(3)
+    tweets = client.search(search_string, result_type: "recent").take(3)
     tweets.each do |tweet|
       puts tweet.text
     end
