@@ -15,9 +15,9 @@ class Predictor
   def setup stock, start_day, end_day
     self.market = Market.new
     quotes = market.get_endprices(stock, start_day, end_day)
-    self.start_price = quotes[0]
-    self.end_price = quotes[1]
-    self.delta = start_price - end_price
+    self.start_price = quotes[0].to_f
+    self.end_price = quotes[1].to_f
+    self.delta = start_price.to_f - end_price.to_f
 
     self.twitter = TwitterEngine.new
     twitter.setup
