@@ -1,7 +1,6 @@
 require "twit-stocks/version"
 
-module Twit
-  module Stocks
-    # Your code goes here...
-  end
-end
+require_relative 'twit-stocks/twitter_engine.rb'
+require_relative 'twit-stocks/predictor.rb'
+require_relative 'twit-stocks/market.rb'
+require_relative 'twit-stocks/node.rb'
