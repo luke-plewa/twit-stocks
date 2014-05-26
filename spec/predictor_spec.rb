@@ -2,20 +2,6 @@ require 'spec_helper'
 
 describe Predictor do
 
-  FEATURES = [
-    ["worst", "terrible", "horrible"],
-    ["garbage", "miserable", "embarrassing", "painful"],
-    ["suck", "crap", "poop", "awful", "rotten"],
-    ["bad", "poor", "not good", "broken"],
-    ["boring", "unfunny", "overrated"],
-    ["okay", "decent", "not bad"],
-    ["good", "alright", "enjoy"],
-    ["great", "better", "well done", "excite"],
-    ["love", "marvelous", "fabulous", "legit", "fresh"],
-    ["awesome", "excellent", "amazing"],
-    ["best", "incredible"] # top
-  ]
-
   let(:predictor) { Predictor.new }
   let(:stock) { :AAPL }
   let(:search_term) { "Apple" }

@@ -15,6 +15,20 @@ class Predictor
     # neural network
     :input_layer, :hidden_layer, :output_layer
 
+  FEATURES = [
+    ["worst", "terrible", "horrible"],
+    ["garbage", "miserable", "embarrassing", "painful"],
+    ["suck", "crap", "poop", "awful", "rotten"],
+    ["bad", "poor", "not good", "broken"],
+    ["boring", "unfunny", "overrated"],
+    ["okay", "decent", "not bad"],
+    ["good", "alright", "enjoy"],
+    ["great", "better", "well done", "excite"],
+    ["love", "marvelous", "fabulous", "legit", "fresh"],
+    ["awesome", "excellent", "amazing"],
+    ["best", "incredible"] # top
+  ]
+
   def setup stock, search_term, start_day, end_day
     self.market = Market.new
     quotes = market.get_endprices(stock, start_day, end_day)
