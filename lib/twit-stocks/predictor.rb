@@ -10,9 +10,12 @@ class Predictor
     :start_price, :end_price, :delta,
 
     # tweets
-    :tweets
+    :tweets,
 
-  def setup stock, start_day, end_day
+    # neural network
+    :input_layer, :hidden_layer, :output_layer
+
+  def setup stock, search_term, start_day, end_day
     self.market = Market.new
     quotes = market.get_endprices(stock, start_day, end_day)
     self.start_price = quotes[0].to_f
@@ -20,22 +23,31 @@ class Predictor
     self.delta = start_price.to_f - end_price.to_f
 
     self.twitter = TwitterEngine.new
-    twitter.setup
-    self.tweets = twitter.get_tweets(stock, "recent")
+    self.tweets = twitter.get_tweets(search_term, "recent")
     self.features = twitter.get_features(tweets)
   end
 
-  def predict stock, start_day, end_day
-    setup(stock, start_day, end_day)
+  def predict stock, search_term, start_day, end_day
+    setup(stock, search_term, start_day, end_day)
     return 1
   end
 
-  def hypothesis inputs
+  def hypothesis
 
   end
 
   def sigmoid z
     1.0 / (1.0 + exp(-z));
+  end
+
+  def boost iterations
+    f_x = 0
+    for t in 0..iterations
+      w_i = Math::E ** ()
+      h_t = 0 # hypothesis
+      a_t = 0.5 * Math.log(Math::E)
+      f_x += a_t * h_t
+    end
   end
 
 end

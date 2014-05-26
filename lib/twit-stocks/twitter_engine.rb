@@ -37,11 +37,10 @@ class TwitterEngine
   end
 
   def get_features tweets
-    self.features = Hash.new
-    self.features.default = 0
-    tweets[:statuses].each_with_index { |tweet, index|
+    self.features = Hash.new(0)
+    tweets[:statuses].each_with_index do |tweet, index|
       parse_tweet tweet[:text]
-    }
+    end
     features
   end
 
@@ -65,9 +64,9 @@ class TwitterEngine
 
   def record_tweets tweets
     tweets_text = ""
-    File.open("tweets", 'wb') { |file|
+    File.open("tweets", 'wb') do |file|
       file.write(tweets_text)
-    }
+    end
   end
 
   def read_tweets
