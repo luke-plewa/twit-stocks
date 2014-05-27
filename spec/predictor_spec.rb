@@ -27,15 +27,17 @@ describe Predictor do
   end
 
   describe '#predict' do
-    it 'correctly predicts stock market change' do
-      trend = predictor.predict(stock, search_term, start_day, end_day)
-      expect(trend).to be 1
-    end
-
     it 'correctly generates features' do
       predictor.predict(stock, search_term,  start_day, end_day)
       expect(predictor.features.size).to be > 1
     end
+
+    it 'builds an input layer' do
+      predictor.features = sample_features
+      predictor.build_neural_net
+      expect(predictor.input_layer.size).to be sample_features.size
+    end
+
   end
 
 end

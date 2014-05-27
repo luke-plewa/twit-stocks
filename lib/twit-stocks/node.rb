@@ -2,7 +2,7 @@ class Node
 
   attr_accessor :weights, :inputs
 
-  def initialize weights, inputs
+  def initialize inputs, weights
     self.weights = weights
     self.weights << 1 # bias unit weight
     self.inputs = inputs

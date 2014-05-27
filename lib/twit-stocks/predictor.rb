@@ -41,9 +41,49 @@ class Predictor
     self.features = twitter.get_features(tweets)
   end
 
+  def build_neural_net
+    build_input_layer
+    self.hidden_layer = build_new_layer(input_layer, input_layer.size)
+    self.output_layer = build_new_layer(hidden_layer, 1)
+  end
+
+  def build_new_layer layer, size
+    next_layer = Array.new()
+    weights = Array.new(layer.size, 1)
+    inputs = Array.new(layer.size, 0)
+
+    layer.each_with_index do |node, index|
+      inputs[index] = node.value
+    end
+
+    for index in 0..size
+      next_layer << Node.new(inputs, weights)
+    end
+    next_layer
+  end
+
+  def build_output_layer
+    self.output_layer = Array.new
+  end
+
+  def build_input_layer
+    self.input_layer = Array.new
+    weights = Array.new(features.size, 1)
+    inputs = Array.new(features.size, 0)
+
+    features.each_with_index do |(feature, count), index|
+      inputs[index] = count
+    end
+
+    inputs.each_with_index do |input, index|
+      input_layer << Node.new([input], [weights[index]])
+    end
+  end
+
   def predict stock, search_term, start_day, end_day
     setup(stock, search_term, start_day, end_day)
-    return 1
+    build_neural_net
+    output_layer.first.value
   end
 
   def hypothesis
