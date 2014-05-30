@@ -1,7 +1,7 @@
 class Predictor
 
   # top level metadata
-  attr_accessor :features, :outputs, :market, :twitter,
+  attr_accessor :features, :outputs, :market, :twitter, :tweets,
 
     # stock metadata
     :stock, :start_day, :end_day,
@@ -9,27 +9,35 @@ class Predictor
     # stock price values
     :start_price, :end_price, :delta,
 
-    # tweets
-    :tweets,
-
     # neural network
-    :input_layer, :hidden_layer, :output_layer
+    :input_layer, :hidden_layer, :output_layer,
+    :num_input_nodes, :num_hidden_nodes, :num_output_nodes,
+    :input_weights, :hidden_weights,
 
-  FEATURES = [
-    ["worst", "terrible", "horrible"],
-    ["garbage", "miserable", "embarrassing", "painful"],
-    ["suck", "crap", "poop", "awful", "rotten"],
-    ["bad", "poor", "not good", "broken"],
-    ["boring", "unfunny", "overrated"],
-    ["okay", "decent", "not bad"],
-    ["good", "alright", "enjoy"],
-    ["great", "better", "well done", "excite"],
-    ["love", "marvelous", "fabulous", "legit", "fresh"],
-    ["awesome", "excellent", "amazing"],
-    ["best", "incredible"] # top
-  ]
+    :output_error_gradients, :hidden_error_gradients,
+    :previous_input_weight_deltas, :previous_hidden_weight_deltas
 
-  def setup stock, search_term, start_day, end_day
+  def set_default_network_values
+    self.num_input_nodes = features.length
+    self.num_hidden_nodes = 10
+    self.num_output_nodes = 1
+
+    self.input_weights = Array.new(num_hidden_nodes) {
+      Array.new(num_input_nodes+1)
+    }
+    self.hidden_weights = Array.new(num_output_nodes) {
+      Array.new(num_hidden_nodes+1)
+    }
+
+    random_weights(input_weights)
+    random_weights(hidden_weights)
+  end
+
+  def set_default_features features
+    self.features = features
+  end
+
+  def set_features stock, search_term, start_day, end_day
     self.market = Market.new
     quotes = market.get_endprices(stock, start_day, end_day)
     self.start_price = quotes[0].to_f
@@ -41,57 +49,59 @@ class Predictor
     self.features = twitter.get_features(tweets)
   end
 
-  def build_neural_net
-    build_input_layer
-    self.hidden_layer = build_new_layer(input_layer, input_layer.size)
-    self.output_layer = build_new_layer(hidden_layer, 1)
+  def set_network_values input_weights, hidden_weights, num_hidden_nodes, num_output_nodes
+    self.input_weights = input_weights
+    self.hidden_weights = hidden_weights
+    self.num_hidden_nodes = num_hidden_nodes
+    self.num_output_nodes = num_output_nodes
   end
 
-  def build_new_layer layer, size
-    next_layer = Array.new()
-    weights = Array.new(layer.size, 1)
-    inputs = Array.new(layer.size, 0)
-
-    layer.each_with_index do |node, index|
-      inputs[index] = node.value
+  def build_neural_net
+    self.input_layer = Array.new(features.length, 0)
+    features.each_with_index do |count, index|
+      input_layer[index] = count
     end
+    self.hidden_layer = build_new_hidden_layer(num_hidden_nodes, input_layer, input_weights)
+    self.output_layer = build_new_hidden_layer(num_output_nodes, hidden_layer, hidden_weights)
+  end
 
-    for index in 0..size
-      next_layer << Node.new(inputs, weights)
+  def random_weights(weights)
+    (0...weights.size).each do |i|
+      (0...weights[i].size).each do |j|
+        weights[i][j] = (rand(100) - 49).to_f / 100
+      end
+    end
+  end
+
+  def build_new_hidden_layer layer_size, input_layer, weights
+    next_layer = Array.new(layer_size, 0)
+
+    (0...weights.size).each do |index|
+      combined_array = input_layer.zip(weights[index])
+      value = combined_array.map{|v,w| v*w}.inject(:+)
+      node = sigmoid(value)
+      next_layer[index] = node
     end
     next_layer
   end
 
-  def build_output_layer
-    self.output_layer = Array.new
-  end
-
-  def build_input_layer
-    self.input_layer = Array.new
-    weights = Array.new(features.size, 1)
-    inputs = Array.new(features.size, 0)
-
-    features.each_with_index do |(feature, count), index|
-      inputs[index] = count
-    end
-
-    inputs.each_with_index do |input, index|
-      input_layer << Node.new([input], [weights[index]])
-    end
-  end
-
   def predict stock, search_term, start_day, end_day
-    setup(stock, search_term, start_day, end_day)
-    build_neural_net
-    output_layer.first.value
+    set_features(stock, search_term, start_day, end_day)
+    set_default_network_values
+    hypothesis
   end
 
   def hypothesis
-
+    build_neural_net
+    output_layer[0]
   end
 
-  def sigmoid z
-    1.0 / (1.0 + exp(-z));
+  def sigmoid x
+    1.0 / (1 + Math::E** -x)
+  end
+
+  def dsigmoid(x)
+    sigmoid(x) * (1 - sigmoid(x))
   end
 
   def boost iterations

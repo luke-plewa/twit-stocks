@@ -5,17 +5,17 @@ class TwitterEngine
   attr_accessor :client, :features
 
   FEATURES = [
-    ["worst", "terrible", "horrible"],
-    ["garbage", "miserable", "embarrassing", "painful"],
-    ["suck", "crap", "poop", "awful", "rotten"],
-    ["bad", "poor", "not good"],
-    ["boring", "unfunny", "overrated"],
-    ["okay", "decent", "not bad"],
-    ["good", "alright", "enjoy"],
-    ["great", "better", "well done", "excite"],
-    ["love", "marvelous", "fabulous", "legit", "fresh"],
-    ["awesome", "excellent", "amazing", "must see"],
-    ["best", "incredible", "Oscar"]
+    "worst", "terrible", "horrible",
+    "garbage", "miserable", "embarrassing", "painful",
+    "suck", "crap", "poop", "awful", "rotten",
+    "bad", "poor", "not good",
+    "boring", "unfunny", "overrated",
+    "okay", "decent", "not bad",
+    "good", "alright", "enjoy",
+    "great", "better", "well done", "excite",
+    "love", "marvelous", "fabulous", "legit", "fresh",
+    "awesome", "excellent", "amazing", "must see",
+    "best", "incredible"
   ]
 
   def initialize
@@ -37,7 +37,7 @@ class TwitterEngine
   end
 
   def get_features tweets
-    self.features = Hash.new(0)
+    self.features = Array.new(FEATURES.length, 0)
     tweets[:statuses].each_with_index do |tweet, index|
       parse_tweet tweet[:text]
     end
@@ -45,11 +45,9 @@ class TwitterEngine
   end
 
   def parse_tweet text
-    FEATURES.each do |set|
-      set.each do |feature|
-        if text.include? feature
-          features[feature] += 1
-        end
+    FEATURES.each_with_index do |feature, index|
+      if text.include? feature
+        features[index] += 1
       end
     end
   end
