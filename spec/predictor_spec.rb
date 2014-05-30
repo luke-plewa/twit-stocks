@@ -23,6 +23,20 @@ describe Predictor do
       predictor.hypothesis
       expect(predictor.input_layer.size).to be sample_features.size
     end
+
+    it 'builds a hidden layer' do
+      predictor.set_default_features(sample_features)
+      predictor.set_default_network_values
+      predictor.hypothesis
+      expect(predictor.hidden_layer.size).to be > 0
+    end
+
+    it 'builds an output layer' do
+      predictor.set_default_features(sample_features)
+      predictor.set_default_network_values
+      predictor.hypothesis
+      expect(predictor.output_layer.size).to be 1
+    end
   end
 
   describe '#predict' do
