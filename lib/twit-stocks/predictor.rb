@@ -52,6 +52,7 @@ class Predictor
   def set_network_values input_weights, hidden_weights, num_hidden_nodes, num_output_nodes
     self.input_weights = input_weights
     self.hidden_weights = hidden_weights
+
     self.num_hidden_nodes = num_hidden_nodes
     self.num_output_nodes = num_output_nodes
   end
@@ -61,6 +62,7 @@ class Predictor
     features.each_with_index do |count, index|
       input_layer[index] = count
     end
+
     self.hidden_layer = build_new_hidden_layer(num_hidden_nodes, input_layer, input_weights)
     self.output_layer = build_new_hidden_layer(num_output_nodes, hidden_layer, hidden_weights)
   end
@@ -82,25 +84,30 @@ class Predictor
       node = sigmoid(value)
       next_layer[index] = node
     end
+
     next_layer
   end
 
   def predict stock, search_term, start_day, end_day
     set_features(stock, search_term, start_day, end_day)
     set_default_network_values
+    build_neural_net
     hypothesis
   end
 
   def hypothesis
-    build_neural_net
     output_layer[0]
+  end
+
+  def train expected_value, learning_rate
+    hypothesis
   end
 
   def sigmoid x
     1.0 / (1 + Math::E** -x)
   end
 
-  def dsigmoid(x)
+  def d_sigmoid(x)
     sigmoid(x) * (1 - sigmoid(x))
   end
 

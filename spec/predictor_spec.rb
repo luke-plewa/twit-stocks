@@ -7,34 +7,29 @@ describe Predictor do
   let(:search_term) { "Apple" }
   let(:start_day) { "2011-12-21" }
   let(:end_day) { "2011-12-22" }
-  let(:sample_features) { [0, 10, 4, 5, 11, 3, 33, 0, 4, 5, 7, 8] }
+
+  before do
+    predictor.set_features(stock, search_term, start_day, end_day)
+      predictor.set_default_network_values
+      predictor.build_neural_net
+  end
 
   describe '#set_features' do
     it 'correctly generates features' do
-      predictor.set_features(stock, search_term,  start_day, end_day)
       expect(predictor.features.size).to be > 1
     end
   end
 
   describe '#hypothesis' do
     it 'builds an input layer' do
-      predictor.set_default_features(sample_features)
-      predictor.set_default_network_values
-      predictor.hypothesis
-      expect(predictor.input_layer.size).to be sample_features.size
+      expect(predictor.input_layer.size).to be predictor.features.size
     end
 
     it 'builds a hidden layer' do
-      predictor.set_default_features(sample_features)
-      predictor.set_default_network_values
-      predictor.hypothesis
       expect(predictor.hidden_layer.size).to be > 0
     end
 
     it 'builds an output layer' do
-      predictor.set_default_features(sample_features)
-      predictor.set_default_network_values
-      predictor.hypothesis
       expect(predictor.output_layer.size).to be 1
     end
   end
@@ -42,6 +37,15 @@ describe Predictor do
   describe '#predict' do
     it 'correctly predicts' do
       value = predictor.predict(stock, search_term,  start_day, end_day)
+      expect(value).to be > 0
+    end
+  end
+
+  describe '#train' do
+    it 'correctly trains' do
+      learning_rate = 0.3
+      expected_value = 1
+      value = predictor.train(expected_value, learning_rate)
       expect(value).to be > 0
     end
   end
