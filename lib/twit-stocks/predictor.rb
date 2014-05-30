@@ -17,6 +17,18 @@ class Predictor
     :output_error_gradients, :hidden_error_gradients,
     :previous_input_weight_deltas, :previous_hidden_weight_deltas
 
+  def set_features stock, search_term, start_day, end_day
+    self.market = Market.new
+    quotes = market.get_endprices(stock, start_day, end_day)
+    self.start_price = quotes[0].to_f
+    self.end_price = quotes[1].to_f
+    self.delta = start_price.to_f - end_price.to_f
+
+    self.twitter = TwitterEngine.new
+    self.tweets = twitter.get_tweets(search_term, "recent")
+    self.features = twitter.get_features(tweets)
+  end
+
   def set_default_network_values
     self.num_input_nodes = features.length
     self.num_hidden_nodes = 10
@@ -33,22 +45,6 @@ class Predictor
     random_weights(hidden_weights)
   end
 
-  def set_default_features features
-    self.features = features
-  end
-
-  def set_features stock, search_term, start_day, end_day
-    self.market = Market.new
-    quotes = market.get_endprices(stock, start_day, end_day)
-    self.start_price = quotes[0].to_f
-    self.end_price = quotes[1].to_f
-    self.delta = start_price.to_f - end_price.to_f
-
-    self.twitter = TwitterEngine.new
-    self.tweets = twitter.get_tweets(search_term, "recent")
-    self.features = twitter.get_features(tweets)
-  end
-
   def set_network_values input_weights, hidden_weights, num_hidden_nodes, num_output_nodes
     self.input_weights = input_weights
     self.hidden_weights = hidden_weights
@@ -57,20 +53,25 @@ class Predictor
     self.num_output_nodes = num_output_nodes
   end
 
-  def build_neural_net
+  def build_input_layer
     self.input_layer = Array.new(features.length, 0)
     features.each_with_index do |count, index|
       input_layer[index] = count
     end
+    input_layer[-1] = -1
+  end
 
-    self.hidden_layer = build_new_hidden_layer(num_hidden_nodes, input_layer, input_weights)
+  def build_neural_net
+    build_input_layer
+    self.hidden_layer = build_new_hidden_layer(num_hidden_nodes+1, input_layer, input_weights)
+    hidden_layer[-1] = -1
     self.output_layer = build_new_hidden_layer(num_output_nodes, hidden_layer, hidden_weights)
   end
 
   def random_weights(weights)
     (0...weights.size).each do |i|
       (0...weights[i].size).each do |j|
-        weights[i][j] = (rand(100) - 49).to_f / 100
+        weights[i][j] = rand(-0.5...0.5)
       end
     end
   end
@@ -86,13 +87,6 @@ class Predictor
     end
 
     next_layer
-  end
-
-  def predict stock, search_term, start_day, end_day
-    set_features(stock, search_term, start_day, end_day)
-    set_default_network_values
-    build_neural_net
-    hypothesis
   end
 
   def hypothesis

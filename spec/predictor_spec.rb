@@ -10,8 +10,8 @@ describe Predictor do
 
   before do
     predictor.set_features(stock, search_term, start_day, end_day)
-      predictor.set_default_network_values
-      predictor.build_neural_net
+    predictor.set_default_network_values
+    predictor.build_neural_net
   end
 
   describe '#set_features' do
@@ -32,12 +32,9 @@ describe Predictor do
     it 'builds an output layer' do
       expect(predictor.output_layer.size).to be 1
     end
-  end
 
-  describe '#predict' do
     it 'correctly predicts' do
-      value = predictor.predict(stock, search_term,  start_day, end_day)
-      expect(value).to be > 0
+      expect(predictor.hypothesis).to be > 0
     end
   end
 
