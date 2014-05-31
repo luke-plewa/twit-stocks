@@ -5,8 +5,8 @@ describe Predictor do
   let(:predictor) { Predictor.new }
   let(:stock) { :AAPL }
   let(:search_term) { "Apple" }
-  let(:start_day) { "2011-12-21" }
-  let(:end_day) { "2011-12-22" }
+  let(:start_day) { "2014-05-29" }
+  let(:end_day) { "2014-05-30" }
   let(:learning_rate) { 0.3 }
   let(:expected_value) { 1 }
   let(:momentum_rate) { 0.2 }
@@ -49,14 +49,22 @@ describe Predictor do
     end
 
     it 'correctly trains multiple times' do
-      puts features
       first_value = predictor.hypothesis
-      (0...20).each do
+      (0...3).each do
         # predictor.set_features(stock, search_term, start_day, end_day)
         predictor.train(expected_value, learning_rate, momentum_rate)
         predictor.build_neural_net
       end
       expect(predictor.hypothesis).to be > first_value
+    end
+
+    it 'correctly approaches delta' do
+      delta = predictor.normalize_expected(predictor.delta)
+      (0...25).each do
+        predictor.train(delta, learning_rate, momentum_rate)
+        predictor.build_neural_net
+      end
+      expect(predictor.hypothesis).to be_between(delta - 0.1, delta + 0.1)
     end
   end
 

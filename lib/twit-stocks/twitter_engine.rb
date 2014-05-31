@@ -41,6 +41,7 @@ class TwitterEngine
     tweets[:statuses].each_with_index do |tweet, index|
       parse_tweet tweet[:text]
     end
+    features << tweets[:statuses].length
     features
   end
 

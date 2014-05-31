@@ -29,6 +29,10 @@ class Predictor
     self.features = twitter.get_features(tweets)
   end
 
+  def normalize_expected value
+    if value > 0 then 1 else 0 end
+  end
+
   def set_default_network_values
     self.num_input_nodes = features.length
     self.num_hidden_nodes = 10
