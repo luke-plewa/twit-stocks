@@ -49,12 +49,14 @@ describe Predictor do
     end
 
     it 'correctly trains multiple times' do
+      puts features
+      first_value = predictor.hypothesis
       (0...20).each do
+        # predictor.set_features(stock, search_term, start_day, end_day)
         predictor.train(expected_value, learning_rate, momentum_rate)
         predictor.build_neural_net
-        puts predictor.hypothesis
       end
-      expect(predictor.hypothesis).to be > 0
+      expect(predictor.hypothesis).to be > first_value
     end
   end
 
