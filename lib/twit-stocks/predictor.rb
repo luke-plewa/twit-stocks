@@ -33,6 +33,12 @@ class Predictor
     if value > 0 then 1 else 0 end
   end
 
+  def set_new_features search_term
+    self.tweets = twitter.get_tweets(search_term, "recent")
+    self.features = twitter.get_features(tweets)
+    build_neural_net
+  end
+
   def set_default_network_values
     self.num_input_nodes = features.length
     self.num_hidden_nodes = 10
@@ -141,7 +147,7 @@ class Predictor
   def update_weights nodes, values, weights, gradients, learning_rate, previous_deltas, momentum_rate
     weights.each_index do |i|
       weights[i].each_index do |j|
-        if !gradients[i].nil? && !values[j].nil?
+        if !values[j].nil? # last weight mismatch because of bias unit
           delta = learning_rate * gradients[i] * values[j]
           weights[i][j] += delta + momentum_rate * previous_deltas[i][j]
           previous_deltas[i][j] = delta
@@ -153,10 +159,6 @@ class Predictor
   def train expected_value, learning_rate, momentum_rate
     build_neural_net
     back_propogation(expected_value, learning_rate, momentum_rate)
-    #implement code to comput cost function j(theta)
-    # implement backprop to compute partial derivatives (delta / delta theta l jk) of j(theta)
-    # use gradient checking to compare delta j(theta) using backprop vs using numerical estimate of gradient of j(theta)
-    # use gradient descent or advanced optimization method with backprop to try to minimize j(theta) as a function of parameters theta
   end
 
   def sigmoid x
@@ -171,7 +173,8 @@ class Predictor
     f_x = 0
     for t in 0..iterations
       w_i = Math::E ** ()
-      h_t = 0 # hypothesis
+      build_neural_net
+      h_t = hypothesis
       a_t = 0.5 * Math.log(Math::E)
       f_x += a_t * h_t
     end

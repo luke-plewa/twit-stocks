@@ -5,8 +5,10 @@ describe Predictor do
   let(:predictor) { Predictor.new }
   let(:stock) { :AAPL }
   let(:search_term) { "Apple" }
-  let(:start_day) { "2014-05-29" }
-  let(:end_day) { "2014-05-30" }
+  let(:search_term_2) { "iphone" }
+  let(:search_term_3) { "ipad" }
+  let(:start_day) { "2014-05-20" }
+  let(:end_day) { "2014-05-30" } # during this split, apple's stock rises
   let(:learning_rate) { 0.3 }
   let(:expected_value) { 1 }
   let(:momentum_rate) { 0.2 }
@@ -60,11 +62,32 @@ describe Predictor do
 
     it 'correctly approaches delta' do
       delta = predictor.normalize_expected(predictor.delta)
-      (0...25).each do
+      (0...30).each do
         predictor.train(delta, learning_rate, momentum_rate)
         predictor.build_neural_net
       end
-      expect(predictor.hypothesis).to be_between(delta - 0.1, delta + 0.1)
+      expect(predictor.hypothesis).to be_between(delta - 0.2, delta + 0.1)
+    end
+
+    it 'correctly predicts after training' do
+      delta = predictor.normalize_expected(predictor.delta)
+      (0...30).each do
+        predictor.train(delta, learning_rate, momentum_rate)
+        predictor.build_neural_net
+      end
+
+      predictor.set_new_features(search_term_2)
+      expect(predictor.hypothesis).to be_between(delta - 0.2, delta + 0.1)
+    end
+  end
+
+  describe '#boost' do
+    it 'improves accuracy through boosting' do
+      delta = predictor.normalize_expected(predictor.delta)
+      (0...5).each do
+        predictor.train(delta, learning_rate, momentum_rate)
+        predictor.build_neural_net
+      end
     end
   end
 
