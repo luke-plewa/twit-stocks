@@ -39,9 +39,9 @@ class Predictor
     build_neural_net
   end
 
-  def set_default_network_values
+  def set_default_network_values hidden_nodes
     self.num_input_nodes = features.length
-    self.num_hidden_nodes = 10
+    self.num_hidden_nodes = hidden_nodes
     self.num_output_nodes = 1
 
     self.input_weights = Array.new(num_hidden_nodes) {

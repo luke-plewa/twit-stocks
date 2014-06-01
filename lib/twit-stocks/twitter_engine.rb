@@ -5,17 +5,17 @@ class TwitterEngine
   attr_accessor :client, :features
 
   FEATURES = [
-    "worst", "terrible", "horrible",
+    "worst", "terrible", "horrible", "hate",
     "garbage", "miserable", "embarrassing", "painful",
-    "suck", "crap", "poop", "awful", "rotten",
-    "bad", "poor", "not good",
-    "boring", "unfunny", "overrated",
-    "okay", "decent", "not bad",
-    "good", "alright", "enjoy",
-    "great", "better", "well done", "excite",
+    "suck", "crap", "poop", "awful", "rotten", "slow",
+    "bad", "poor", "not good", "broke", "dumb",
+    "boring", "unfunny", "overrated", "obnoxious",
+    "okay", "decent", "not bad", "won't", "want",
+    "good", "alright", "enjoy", "sell", "buy", "must",
+    "great", "better", "well done", "excite", "happy",
     "love", "marvelous", "fabulous", "legit", "fresh",
     "awesome", "excellent", "amazing", "must see",
-    "best", "incredible"
+    "best", "incredible", "hot", "new"
   ]
 
   def initialize
@@ -38,6 +38,7 @@ class TwitterEngine
 
   def get_features tweets
     self.features = Array.new(FEATURES.length, 0)
+    puts tweets[:statuses].count
     tweets[:statuses].each_with_index do |tweet, index|
       parse_tweet tweet[:text]
     end

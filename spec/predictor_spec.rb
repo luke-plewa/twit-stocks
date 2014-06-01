@@ -12,10 +12,11 @@ describe Predictor do
   let(:learning_rate) { 0.3 }
   let(:expected_value) { 1 }
   let(:momentum_rate) { 0.2 }
+  let(:hidden_nodes) { 10 }
 
   before do
     predictor.set_features(stock, search_term, start_day, end_day)
-    predictor.set_default_network_values
+    predictor.set_default_network_values(hidden_nodes)
     predictor.build_neural_net
   end
 
