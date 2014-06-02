@@ -19,14 +19,14 @@ describe Boost do
   let(:stock_3) { :GRPN }
   let(:search_term_8) { "groupon" }
 
-  let(:stock_3) { :BRCM }
+  let(:stock_4) { :BRCM }
   let(:search_term_9) { "broadcom" }
   let(:search_term_10) { "baseband" }
 
   let(:start_day) { "2014-05-20" }
   let(:end_day) { "2014-05-30" } # during this split, apple's stock rises
 
-  let(:start_day_2) { "2014-01-26" }
+  let(:start_day_2) { "2014-05-26" }
   let(:end_day_2) { "2014-06-01" } # during this split, groupon's stock falls
 
   let(:start_day_3) { "2014-05-26" }
@@ -73,6 +73,21 @@ describe Boost do
 
       market = Market.new
       quotes = market.get_endprices(stock_3, start_day_2, end_day_2)
+      delta = quotes[0].to_f - quotes[1].to_f
+      puts quotes
+      puts result
+
+      expect(result).to be < 0.5
+    end
+
+    it 'correctly predicts broadcom rise' do
+      twitter = TwitterEngine.new
+      tweets = twitter.get_tweets(search_term_10, "recent")
+      features = twitter.get_features(tweets)
+      result = boost.hypothesis(features)
+
+      market = Market.new
+      quotes = market.get_endprices(stock_4, start_day_3, end_day_3)
       delta = quotes[0].to_f - quotes[1].to_f
       puts quotes
       puts result

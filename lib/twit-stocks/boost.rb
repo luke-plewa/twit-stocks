@@ -34,6 +34,7 @@ class Boost
       w_i = Math::E ** (weights[t])
       predictors[t].reset_features(features)
       h_t = predictors[t].hypothesis
+      puts predictors[t].hypothesis
       # a_t = 0.5 * Math.log(Math::E) # actually want to grab the weighted error sum
       f_x += h_t * weights[t]
     end
