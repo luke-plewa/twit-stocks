@@ -3,6 +3,7 @@
 require_relative 'twitter_engine.rb'
 require_relative 'predictor.rb'
 require_relative 'market.rb'
+require_relative 'boost.rb'
 
 MIXED_TYPE = "mixed"
 stock = :APPL

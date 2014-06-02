@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Boost do
+describe Driver do
 
   let(:boost) { Boost.new(7) }
   let(:stock) { :AAPL }
@@ -44,44 +44,8 @@ describe Boost do
     boost.train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
   end
 
-  describe '#boost' do
-    it 'correctly predicts on many nets' do
-      twitter = TwitterEngine.new
-      tweets = twitter.get_tweets(search_term, "recent")
-      features = twitter.get_features(tweets)
-      result = boost.hypothesis(features)
-      expect(result).to be > 0.5
-    end
-
-    it 'correctly predicts a negative trend' do
-      twitter = TwitterEngine.new
-      tweets = twitter.get_tweets(search_term_8, "recent")
-      features = twitter.get_features(tweets)
-      result = boost.hypothesis(features)
-
-      market = Market.new
-      quotes = market.get_endprices(stock_3, start_day_2, end_day_2)
-      delta = quotes[0].to_f - quotes[1].to_f
-      puts quotes
-      puts result
-
-      expect(result).to be < 0.5
-    end
-
-    it 'correctly predicts broadcom rise' do
-      twitter = TwitterEngine.new
-      tweets = twitter.get_tweets(search_term_10, "recent")
-      features = twitter.get_features(tweets)
-      result = boost.hypothesis(features)
-
-      market = Market.new
-      quotes = market.get_endprices(stock_4, start_day_3, end_day_3)
-      delta = quotes[0].to_f - quotes[1].to_f
-      puts quotes
-      puts result
-
-      expect(result).to be > 0.5
+  describe '#drive' do
+    it 'run to test things' do
     end
   end
-
 end
