@@ -14,11 +14,15 @@ class Predictor
     :num_input_nodes, :num_hidden_nodes, :num_output_nodes,
     :input_weights, :hidden_weights,
 
+    # back propagation NN
     :output_error, :hidden_error,
     :previous_input_weight_deltas, :previous_hidden_weight_deltas
 
   def set_features stock, search_term, start_day, end_day
     self.market = Market.new
+    self.start_day = start_day
+    self.end_day = end_day
+    self.stock = stock
     quotes = market.get_endprices(stock, start_day, end_day)
     self.start_price = quotes[0].to_f
     self.end_price = quotes[1].to_f
@@ -80,9 +84,9 @@ class Predictor
 
   def build_neural_net
     build_input_layer
-    self.hidden_layer = build_new_hidden_layer(num_hidden_nodes+1, input_layer, input_weights)
+    self.hidden_layer = build_new_layer(num_hidden_nodes+1, input_layer, input_weights)
     hidden_layer[-1] = -1
-    self.output_layer = build_new_hidden_layer(num_output_nodes, hidden_layer, hidden_weights)
+    self.output_layer = build_new_layer(num_output_nodes, hidden_layer, hidden_weights)
   end
 
   def random_weights(weights)
@@ -93,8 +97,8 @@ class Predictor
     end
   end
 
-  # goes through forward propogation algorithm
-  def build_new_hidden_layer layer_size, input_layer, weights
+  # goes through forward propagation algorithm
+  def build_new_layer layer_size, input_layer, weights
     next_layer = Array.new(layer_size, 0)
 
     (0...weights.size).each do |index|
@@ -119,11 +123,14 @@ class Predictor
   def back_propogation expected_value, learning_rate, momentum_rate
     self.output_error = [(expected_value - hypothesis) * d_sigmoid(hypothesis)]
     self.hidden_error = calculate_hidden_error_gradients
-    update_all_weights(expected_value, learning_rate, momentum_rate)
+    update_weights(hidden_layer, input_layer, input_weights, hidden_error, learning_rate, previous_input_weight_deltas, momentum_rate)
+    update_weights(output_layer, hidden_layer, hidden_weights, output_error, learning_rate, previous_hidden_weight_deltas, momentum_rate)
   end
 
   def reversed_hidden_weights
-    reversed = Array.new(hidden_layer.size){Array.new(output_layer.size)}
+    reversed = Array.new(hidden_layer.size) {
+      Array.new(output_layer.size)
+    }
     hidden_weights.each_index do |i|
       hidden_weights[i].each_index do |j|
         reversed[j][i] = hidden_weights[i][j]
@@ -135,13 +142,10 @@ class Predictor
   def calculate_hidden_error_gradients
     reversed = reversed_hidden_weights
     hidden_layer.each_with_index.map do |node, i|
-      d_sigmoid(hidden_layer[i]) * output_error.zip(reversed[i]).map{|error, weight| error*weight}.inject(:+)
+      combined_array = output_error.zip(reversed[i])
+      sum_array = combined_array.map{|error, weight| error*weight}.inject(:+)
+      d_sigmoid(hidden_layer[i]) * sum_array
     end
-  end
-
-  def update_all_weights expected_value, learning_rate, momentum_rate
-    update_weights(hidden_layer, input_layer, input_weights, hidden_error, learning_rate, previous_input_weight_deltas, momentum_rate)
-    update_weights(output_layer, hidden_layer, hidden_weights, output_error, learning_rate, previous_hidden_weight_deltas, momentum_rate)
   end
 
   def update_weights nodes, values, weights, gradients, learning_rate, previous_deltas, momentum_rate
@@ -161,23 +165,14 @@ class Predictor
     back_propogation(expected_value, learning_rate, momentum_rate)
   end
 
+  # sigmoid function for forward propagation
   def sigmoid x
     1.0 / (1 + Math::E** -x)
   end
 
+  # sigmoid function for back propagation
   def d_sigmoid(x)
     sigmoid(x) * (1 - sigmoid(x))
-  end
-
-  def boost iterations
-    f_x = 0
-    for t in 0..iterations
-      w_i = Math::E ** ()
-      build_neural_net
-      h_t = hypothesis
-      a_t = 0.5 * Math.log(Math::E)
-      f_x += a_t * h_t
-    end
   end
 
 end

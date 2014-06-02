@@ -38,7 +38,6 @@ class TwitterEngine
 
   def get_features tweets
     self.features = Array.new(FEATURES.length, 0)
-    puts tweets[:statuses].count
     tweets[:statuses].each_with_index do |tweet, index|
       parse_tweet tweet[:text]
     end
