@@ -1,18 +1,22 @@
 class Boost
-  attr_accessor :predictor
+  attr_accessor :predictors, :num_predictors, :weights
 
-  def initalize
-    self.predictor = Predictor.new
+  def initalize num_predictors
+    self.num_predictors = num_predictors
+    self.predictors = Array.new(num_predictors) {
+      Predictor.new
+    }
+    self.weights = Array.new(num_predictors, (1 / num_predictors))
   end
 
-  def setup_neural_net stock, search_term, start_day, end_day, hidden_nodes
-    predictor.set_features(stock, search_term, start_day, end_day)
-    predictor.set_default_network_values(hidden_nodes)
-    predictor.build_neural_net
+  def setup_neural_net index, stock, search_term, start_day, end_day, hidden_nodes
+    predictors[index].set_features(stock, search_term, start_day, end_day)
+    predictors[index].set_default_network_values(hidden_nodes)
+    predictors[index].build_neural_net
   end
 
-  def train_neural_net expected_value, learning_rate, momentum_rate
-    predictor.train(expected_value, learning_rate, momentum_rate)
+  def train_neural_net index, expected_value, learning_rate, momentum_rate
+    predictors[index].train(expected_value, learning_rate, momentum_rate)
   end
 
   def boost iterations, search_terms

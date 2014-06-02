@@ -22,7 +22,7 @@ describe Boost do
   let(:hidden_nodes) { 10 }
 
   before do
-    boost.setup_neural_net(stock, search_term, start_day, end_day, hidden_nodes)
+    boost.setup_neural_net(0, stock, search_term, start_day, end_day, hidden_nodes)
   end
 
   describe '#boost' do
