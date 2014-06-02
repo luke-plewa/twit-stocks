@@ -1,5 +1,6 @@
 class Boost
-  attr_accessor :predictors, :num_predictors, :weights
+  attr_accessor :predictors, :num_predictors, :weights,
+    :learning_rate
 
   def initalize num_predictors
     self.num_predictors = num_predictors
@@ -19,12 +20,12 @@ class Boost
     predictors[index].train(expected_value, learning_rate, momentum_rate)
   end
 
-  def boost iterations, search_terms
+  def hypothesis iterations
     f_x = 0
     for t in 0..iterations
-      w_i = Math::E ** ()
-      build_neural_net
-      h_t = hypothesis
+      w_i = Math::E ** (weights[t])
+      predictor[t].build_neural_net
+      h_t = predictor[t].hypothesis
       a_t = 0.5 * Math.log(Math::E)
       f_x += a_t * h_t
     end
