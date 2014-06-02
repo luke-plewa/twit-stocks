@@ -15,7 +15,8 @@ class TwitterEngine
     "great", "better", "well done", "excite", "happy",
     "love", "marvelous", "fabulous", "legit", "fresh",
     "awesome", "excellent", "amazing", "must see",
-    "best", "incredible", "hot", "new"
+    "best", "incredible", "hot", "new",
+    "miss", "overdue", "impressive", "kill"
   ]
 
   def initialize

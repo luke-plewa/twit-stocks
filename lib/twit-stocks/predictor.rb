@@ -43,6 +43,11 @@ class Predictor
     build_neural_net
   end
 
+  def reset_features features
+    self.features = features
+    build_neural_net
+  end
+
   def set_default_network_values hidden_nodes
     self.num_input_nodes = features.length
     self.num_hidden_nodes = hidden_nodes
