@@ -16,7 +16,8 @@ class TwitterEngine
     "love", "marvelous", "fabulous", "legit", "fresh",
     "awesome", "excellent", "amazing", "must see",
     "best", "incredible", "hot", "new",
-    "miss", "overdue", "impressive", "kill"
+    "miss", "overdue", "impressive", "kill", "grow",
+    "evil", "piss"
   ]
 
   def initialize
@@ -29,6 +30,14 @@ class TwitterEngine
       config.consumer_secret     = "vlMiEiwYA3y1iw00jwoAHoo7q33v7UX1vaPn73Dq6zLPX02oGI"
       config.access_token        = "354589333-0EFXMVUvR5MrukVUtGHVCSunHrrzSmYVy1BE2Afq"
       config.access_token_secret = "q4KBVMmiRQkgR2jE9cZHeQjZeXtU7FDABimiexQoEr2mo"
+    end
+  end
+
+  def print_features features
+    features.each_with_index do |feature, index|
+      if !FEATURES[index].nil?
+        puts feature.to_s + " " + FEATURES[index]
+      end
     end
   end
 
