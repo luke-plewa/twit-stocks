@@ -46,6 +46,7 @@ class Boost
       setup_neural_net(index, stocks[index], search_terms[index], start_day, end_day, hidden_nodes)
       train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
       train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
+      adjust_weight(index, get_delta(index))
     end
   end
 
