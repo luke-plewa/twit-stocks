@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Boost do
 
-  let(:boost) { Boost.new(9) }
+  let(:boost) { Boost.new(13) }
   let(:stock) { :AAPL }
   let(:search_term) { "Apple" }
   let(:search_term_2) { "iphone" }
@@ -24,6 +24,12 @@ describe Boost do
   let(:stock_5) { :TWX }
   let(:search_term_11) { "time warner" }
 
+  let(:stock_6) { :HAS }
+  let(:search_term_12) { "hasbro" }
+
+  let(:stock_7) { :GME }
+  let(:search_term_13) { "gamestop" }
+
   let(:start_day) { "2014-05-20" }
   let(:end_day) { "2014-05-30" } # during this split, apple's stock rises
 
@@ -33,17 +39,24 @@ describe Boost do
   let(:start_day_3) { "2014-05-26" }
   let(:end_day_3) { "2014-06-02" } # during this split, broadcom's stock rises
 
+  let(:start_day_4) { "2014-05-30" }
+  let(:end_day_4) { "2014-06-02" } # during this split, gamestop's stock falls
+
+  let(:start_day_5) { "2014-05-27" }
+  let(:end_day_5) { "2014-06-02" } # this split represents the past week
+
   let(:learning_rate) { 0.7 }
   let(:expected_value) { 1 }
   let(:momentum_rate) { 0.2 }
   let(:hidden_nodes) { 20 }
 
   before do
-    stocks = [stock, stock, stock, stock, stock_2, stock_2, stock_3, stock_4, stock_5]
+    stocks = [stock, stock, stock, stock, stock_2, stock_2, stock_3, stock_4, stock_5,
+      stock_6, stock_7, stock_5, stock_7]
     search_terms = [search_term, search_term_2, search_term_3, search_term_4,
-      search_term_5, search_term_6, search_term_7, search_term_9, search_term_11]
+      search_term_5, search_term_6, search_term_7, search_term_9, search_term_11,
+      search_term_12, search_term_13, search_term_11, search_term_13]
     boost.train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
-    #boost.train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
   end
 
   describe '#boost' do
@@ -67,22 +80,25 @@ describe Boost do
     #end
 
     it 'correctly predicts broadcom rise' do
+      term = search_term_6
+      my_stock = stock_2
+
       twitter = TwitterEngine.new
-      tweets = twitter.get_tweets(search_term_10, "recent")
+      tweets = twitter.get_tweets(term, "recent")
       features = twitter.get_features(tweets)
       result = boost.hypothesis(features)
 
       market = Market.new
-      # quotes = market.get_endprices(stock_4, start_day_3, end_day_3)
-      quotes = market.get_endprices(stock_5, start_day_2, end_day_2)
+      quotes = market.get_endprices(my_stock, start_day_5, end_day_5)
       delta = quotes[0].to_f - quotes[1].to_f
+
+      puts my_stock
       puts quotes
       puts delta
       puts result
+      #twitter.print_features(features)
 
-      twitter.print_features(features)
-
-      expect(result).to be > 0.5
+      expect(result).to be > 0
     end
   end
 
