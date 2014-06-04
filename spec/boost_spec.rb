@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Boost do
 
-  let(:boost) { Boost.new(13) }
+  let(:boost) { Boost.new(14) }
   let(:stock) { :AAPL }
   let(:search_term) { "Apple" }
   let(:search_term_2) { "iphone" }
@@ -30,6 +30,9 @@ describe Boost do
   let(:stock_7) { :GME }
   let(:search_term_13) { "gamestop" }
 
+  let(:stock_8) { :WYNN }
+  let(:search_term_14) { "wynn" }
+
   let(:start_day) { "2014-05-20" }
   let(:end_day) { "2014-05-30" } # during this split, apple's stock rises
 
@@ -43,7 +46,7 @@ describe Boost do
   let(:end_day_4) { "2014-06-02" } # during this split, gamestop's stock falls
 
   let(:start_day_5) { "2014-05-27" }
-  let(:end_day_5) { "2014-06-02" } # this split represents the past week
+  let(:end_day_5) { "2014-06-03" } # this split represents the past week
 
   let(:learning_rate) { 0.7 }
   let(:expected_value) { 1 }
@@ -52,14 +55,59 @@ describe Boost do
 
   before do
     stocks = [stock, stock, stock, stock, stock_2, stock_2, stock_3, stock_4, stock_5,
-      stock_6, stock_7, stock_5, stock_7]
+      stock_6, stock_7, stock_5, stock_7, stock_8]
     search_terms = [search_term, search_term_2, search_term_3, search_term_4,
       search_term_5, search_term_6, search_term_7, search_term_9, search_term_11,
-      search_term_12, search_term_13, search_term_11, search_term_13]
-    boost.train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+      search_term_12, search_term_13, search_term_11, search_term_13, search_term_14]
+    boost.train_twice_and_weight(stocks, search_terms, start_day_5, end_day_5, hidden_nodes, learning_rate, momentum_rate)
   end
 
   describe '#boost' do
+
+    #it 'classifies with a classifier' do
+    #stocks = [stock, stock, stock, stock, stock_2, stock_2, stock_3, stock_4, stock_5,
+    #  stock_6, stock_7, stock_5, stock_7]
+    #search_terms = [search_term, search_term_2, search_term_3, search_term_4,
+    #  search_term_5, search_term_6, search_term_7, search_term_9, search_term_11,
+    #  search_term_12, search_term_13, search_term_11, search_term_13]
+    #  predictor = Predictor.new
+    #  predictor.set_features(stock, search_term, start_day, end_day)
+    #  predictor.set_default_network_values(hidden_nodes)
+    #  predictor.build_neural_net
+#
+    #  stocks.each_with_index do |stock, index|
+    #    predictor.set_features(stock, search_terms[index], start_day_5, end_day_5)
+    #    predictor.train(expected_value, learning_rate, momentum_rate)
+    #    predictor.build_neural_net
+    #  end
+#
+    #  predictor.set_features(stock_3, search_term_7, start_day_5, end_day_5)
+    #  predictor.build_neural_net
+    #  puts predictor.delta
+    #  puts predictor.hypothesis
+    #end
+
+    #it 'classifies with a different num of classifiers' do
+    #stocks = [stock, stock, stock, stock, stock_2, stock_2, stock_3, stock_4, stock_5,
+    #  stock_6, stock_7, stock_5, stock_7]
+    #search_terms = [search_term, search_term_2, search_term_3, search_term_4,
+    #  search_term_5, search_term_6, search_term_7, search_term_9, search_term_11,
+    #  search_term_12, search_term_13, search_term_11, search_term_13]
+#
+    # boost.train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+#
+    #  twitter = TwitterEngine.new
+    #  tweets = twitter.get_tweets("googleglass", "recent")
+    #  features = twitter.get_features(tweets)
+    #  result = boost.hypothesis(features)
+#
+    #  market = Market.new
+    #  quotes = market.get_endprices(:ADBE, start_day_4, end_day_4)
+    #  delta = quotes[0].to_f - quotes[1].to_f
+    #  puts delta
+    #  puts result
+    #end
+
     #it 'correctly predicts on many nets' do
       #twitter = TwitterEngine.new
       #tweets = twitter.get_tweets(search_term, "recent")
@@ -80,8 +128,8 @@ describe Boost do
     #end
 
     it 'correctly predicts broadcom rise' do
-      term = search_term_6
-      my_stock = stock_2
+      term = "facebook"
+      my_stock = :FB
 
       twitter = TwitterEngine.new
       tweets = twitter.get_tweets(term, "recent")

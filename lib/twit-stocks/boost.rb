@@ -37,15 +37,11 @@ class Boost
   end
 
   def adjust_weight index, expected_value
-    # puts "stock: " + predictors[index].stock.to_s
     error = error_func(predictors[index].hypothesis, normalize_expected(expected_value))
     weights[index] = weights[index] * (1.0 - error)
-    # puts "error: " + error.to_s
-    # puts "weight: " + weights[index].to_s + "\n"
   end
 
   def error_func hypothesis, expected_value
-    # puts "expected: " + expected_value.to_s + " hypothesis: " + hypothesis.to_s
     (expected_value - hypothesis).abs
   end
 
@@ -63,7 +59,6 @@ class Boost
     for t in 0...num_predictors
       predictors[t].reset_features(features)
       h_t = predictors[t].hypothesis
-      # puts "partial ans: " + h_t.to_s + " " + predictors[t].stock.to_s + " weight: " + weights[t].to_s
       f_x += h_t * (weights[t] / sum_weights)
     end
     f_x
