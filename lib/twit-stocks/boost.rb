@@ -1,6 +1,6 @@
 class Boost
   attr_accessor :predictors, :num_predictors, :weights,
-    :learning_rate
+    :learning_rate, :error_index, :max_error, :samples
 
   def initialize num_predictors
     self.num_predictors = num_predictors
@@ -8,6 +8,8 @@ class Boost
       Predictor.new
     }
     self.weights = Array.new(num_predictors, 1.0)
+    self.max_error = 0
+    self.error_index = 0
   end
 
   def setup_neural_net index, stock, search_term, start_day, end_day, hidden_nodes
@@ -39,6 +41,10 @@ class Boost
   def adjust_weight index, expected_value
     error = error_func(predictors[index].hypothesis, normalize_expected(expected_value))
     weights[index] = weights[index] * (1.0 - error)
+    if error > max_error then
+      max_error = error
+      error_index = index
+    end
   end
 
   def error_func hypothesis, expected_value
@@ -55,17 +61,27 @@ class Boost
   end
 
   def train_with_features(stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+    self.samples = features
+
     predictors.each_with_index do |predictor, pre_index|
-      random = rand(predictors.size / 5)
+      predictors[pre_index].features = Array.new(features.first.length)
+      predictors[pre_index].set_default_network_values(hidden_nodes)
+
+      random = rand(3)
       (0..random).each do |additor|
         index = additor + pre_index
-        if (index >= predictors.length) then index = index - predictors.length end
-        predictors[index].set_stocks(stocks[index], features[index], start_day, end_day)
-        predictors[index].set_default_network_values(hidden_nodes)
-        predictors[index].build_neural_net
-        train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
-        adjust_weight(index, get_delta(index))
+        if (index >= predictors.length) then
+          index = index - predictors.length
+        end
+
+        predictors[pre_index].set_stocks(stocks[index], features[index], start_day, end_day)
+        predictors[pre_index].build_neural_net
+        train_neural_net(pre_index, get_delta(pre_index), learning_rate, momentum_rate)
+        adjust_weight(pre_index, get_delta(pre_index))
       end
+
+      predictors[pre_index].set_stocks(stocks[error_index], features[error_index], start_day, end_day)
+      max_error = 0
     end
   end
 
