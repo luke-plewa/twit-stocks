@@ -32,17 +32,12 @@ class Boost
     sum
   end
 
-  def normalize_expected expected_value
-    new_val = expected_value + 0.5
-    if new_val > 1 then new_val = 1 end
-    if new_val < 0 then new_val = 0 end
-    new_val
-  end
-
   def train_neural_net index, expected_value, learning_rate, momentum_rate
-    predictors[index].train(normalize_expected(expected_value), learning_rate, momentum_rate)
+    expected = predictors[index].normalize_expected(expected_value)
+    predictors[index].train(expected, learning_rate, momentum_rate)
   end
 
+  # used to make sure the highest error stocks dont get overfitted
   def next_best_error old_error_index
     max_error = 0
     error_index = 0
@@ -62,7 +57,8 @@ class Boost
   end
 
   def adjust_weight index, expected_value, error_index
-    error = error_func(predictors[index].hypothesis, normalize_expected(expected_value))
+    expected = predictors[index].normalize_expected(expected_value)
+    error = error_func(predictors[index].hypothesis, expected)
     weights[index] = weights[index] * (1.0 - error * ERROR_RATE)
     if errors[error_index].error == 0 then
       errors[error_index].error = error
@@ -79,6 +75,7 @@ class Boost
     (expected_value - hypothesis).abs
   end
 
+  # looks up twitter features for each stock
   def train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
     self.errors = Array.new(search_terms.length, ErrorNode.new)
     predictors.each_with_index do |predictor, index|
@@ -89,6 +86,7 @@ class Boost
     end
   end
 
+  # uses the features stored in samples folder
   def train_with_features stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate
     self.samples = features
     create_errors(stocks, features)
@@ -109,6 +107,7 @@ class Boost
     end
   end
 
+  # handles distribution of training sets
   def train_on_highest_error predictor, index, start_day, end_day, learning_rate, momentum_rate
     max_error = 0
     error_index = 0
@@ -149,6 +148,7 @@ class Boost
   end
 end
 
+# node used for distribution of training sets priority array list
 class ErrorNode
   attr_accessor :error, :features, :stock
 end
