@@ -35,7 +35,7 @@ class TwitterEngine
 
   def print_features features
     features.each_with_index do |feature, index|
-      if !FEATURES[index].nil?
+      if !FEATURES[index].nil? && feature > 0
         puts feature.to_s + " " + FEATURES[index]
       end
     end
