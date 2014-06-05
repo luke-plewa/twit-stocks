@@ -6,8 +6,8 @@ require_relative 'lib/twit-stocks/boost.rb'
 
 puts "Starting to predict stocks..."
 
-start_day = "2014-05-20"
-end_day = "2014-05-30"  # during this split, apple's stock ris
+start_day = "2014-05-26"
+end_day = "2014-06-04"  # during this split, apple's stock ris
 
 start_day_2 = "2014-05-26"
 end_day_2 = "2014-06-01"  # during this split, time warner's stock fal
@@ -27,11 +27,11 @@ momentum_rate = 0.2
 hidden_nodes = 20
 
 stocks = [:AAPL, :AAPL, :AAPL, :AAPL, :GOOG, :GOOG, :ADBE, :BRCM, :BRCM, :TWX,
-  :HAS, :HAS, :GME, :WYNN, :DO, :UA, :NFLX, :T, :CMCSK, :CMCSA, :CVX,
+  :HAS, :HAS, :GME, :WYNN, :UA, :NFLX, :T, :CMCSK, :CMCSA, :CVX,
   :CSCO, :BA]
 search_terms = ["apple", "iphone", "ipad", "macbook",
   "google", "googleglass", "adobe", "broadcom", "baseband", "time warner",
-  "hasbro", "transformer", "gamestop", "wynn", "diamond offshort drilling",
+  "hasbro", "transformer", "gamestop", "wynn",
   "under armor", "netflix", "at&t", "comcast", "comcast", "chevron",
   "cisco", "boeing"
 ]
@@ -46,7 +46,7 @@ if !ARGV[2].nil? && ARGV[2].eql?("read") then
     features << twitter.read_features(stock)
   end
   puts "reading from recorded tweets..."
-  boost.train_with_features(stocks, features, start_day_5, end_day_5, hidden_nodes, learning_rate, momentum_rate)
+  boost.train_with_features(stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
 else
   puts "pulling tweets from twitter..."
   boost.train_twice_and_weight(stocks, search_terms, start_day_5, end_day_5, hidden_nodes, learning_rate, momentum_rate)
