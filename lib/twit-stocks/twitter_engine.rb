@@ -64,23 +64,34 @@ class TwitterEngine
   end
 
   def print_search search_string
-    tweets = client.search(search_string, result_type: "recent").take(3)
-    tweets.each do |tweet|
+    tweets = client.search(search_string, result_type: "recent")
+    tweets[:statuses].each do |tweet|
       # puts tweet.text
     end
     tweets
   end
 
-  def record_tweets tweets
-    tweets_text = ""
-    File.open("tweets", 'wb') do |file|
-      file.write(tweets_text)
+  def record_features features, stock
+    old_features = read_features(stock)
+    File.open("samples/#{stock}_features.txt", 'w') do |file|
+      features.each_with_index do |features_text, index|
+        if !old_features[index].nil?
+          file.write((features_text + old_features[index].to_i).to_s + "\n")
+        else
+          file.write(features_text.to_s + "\n")
+        end
+      end
     end
   end
 
-  def read_tweets
-    File.open("tweets", "r").each_line do |line|
+  def read_features stock
+    features = []
+    if File.exist?("samples/#{stock}_features.txt")
+      File.open("samples/#{stock}_features.txt", "r").each_line do |line|
+        features << line.to_i
+      end
     end
+    features
   end
 
 end

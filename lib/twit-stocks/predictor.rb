@@ -26,11 +26,23 @@ class Predictor
     quotes = market.get_endprices(stock, start_day, end_day)
     self.start_price = quotes[0].to_f
     self.end_price = quotes[1].to_f
-    self.delta = start_price.to_f - end_price.to_f
+    self.delta = end_price.to_f - start_price.to_f
 
     self.twitter = TwitterEngine.new
     self.tweets = twitter.get_tweets(search_term, "recent")
     self.features = twitter.get_features(tweets)
+  end
+
+  def set_stocks stock, features, start_day, end_day
+    self.market = Market.new
+    self.start_day = start_day
+    self.end_day = end_day
+    self.stock = stock
+    quotes = market.get_endprices(stock, start_day, end_day)
+    self.start_price = quotes[0].to_f
+    self.end_price = quotes[1].to_f
+    self.delta = end_price.to_f - start_price.to_f
+    self.features = features
   end
 
   def normalize_expected value

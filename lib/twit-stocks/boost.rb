@@ -54,6 +54,21 @@ class Boost
     end
   end
 
+  def train_with_features(stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+    predictors.each_with_index do |predictor, pre_index|
+      random = rand(predictors.size / 5)
+      (0..random).each do |additor|
+        index = additor + pre_index
+        if (index >= predictors.length) then index = index - predictors.length end
+        predictors[index].set_stocks(stocks[index], features[index], start_day, end_day)
+        predictors[index].set_default_network_values(hidden_nodes)
+        predictors[index].build_neural_net
+        train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
+        adjust_weight(index, get_delta(index))
+      end
+    end
+  end
+
   def hypothesis features
     f_x = 0
     for t in 0...num_predictors
