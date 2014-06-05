@@ -1,6 +1,6 @@
 class Boost
   attr_accessor :predictors, :num_predictors, :weights,
-    :learning_rate, :error_index, :max_error, :samples
+    :learning_rate, :errors, :samples
 
   def initialize num_predictors
     self.num_predictors = num_predictors
@@ -8,8 +8,6 @@ class Boost
       Predictor.new
     }
     self.weights = Array.new(num_predictors, 1.0)
-    self.max_error = 0
-    self.error_index = 0
   end
 
   def setup_neural_net index, stock, search_term, start_day, end_day, hidden_nodes
@@ -41,10 +39,7 @@ class Boost
   def adjust_weight index, expected_value
     error = error_func(predictors[index].hypothesis, normalize_expected(expected_value))
     weights[index] = weights[index] * (1.0 - error)
-    if error > max_error then
-      max_error = error
-      error_index = index
-    end
+    errors[index].error = error
   end
 
   def error_func hypothesis, expected_value
@@ -52,6 +47,7 @@ class Boost
   end
 
   def train_twice_and_weight(stocks, search_terms, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+    self.errors = Array.new(search_terms.length, ErrorNode.new)
     predictors.each_with_index do |predictor, index|
       setup_neural_net(index, stocks[index], search_terms[index], start_day, end_day, hidden_nodes)
       train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
@@ -60,28 +56,45 @@ class Boost
     end
   end
 
-  def train_with_features(stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate)
+  def train_with_features stocks, features, start_day, end_day, hidden_nodes, learning_rate, momentum_rate
     self.samples = features
+    create_errors(stocks, features)
 
-    predictors.each_with_index do |predictor, pre_index|
-      predictors[pre_index].features = Array.new(features.first.length)
-      predictors[pre_index].set_default_network_values(hidden_nodes)
+    predictors.each_with_index do |predictor, index|
+      predictors[index].set_stocks(stocks[index], features[index], start_day, end_day)
+      predictors[index].set_default_network_values(hidden_nodes)
+      predictors[index].build_neural_net
+      train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
+      adjust_weight(index, get_delta(index))
 
-      random = rand(3)
-      (0..random).each do |additor|
-        index = additor + pre_index
-        if (index >= predictors.length) then
-          index = index - predictors.length
-        end
+      train_on_highest_error(predictors[index], index, start_day, end_day, learning_rate, momentum_rate)
+      train_on_highest_error(predictors[index], index, start_day, end_day, learning_rate, momentum_rate)
+    end
+  end
 
-        predictors[pre_index].set_stocks(stocks[index], features[index], start_day, end_day)
-        predictors[pre_index].build_neural_net
-        train_neural_net(pre_index, get_delta(pre_index), learning_rate, momentum_rate)
-        adjust_weight(pre_index, get_delta(pre_index))
+  def train_on_highest_error predictor, index, start_day, end_day, learning_rate, momentum_rate
+    max_error = 0
+    error_index = 0
+    errors.each_with_index do |error, index|
+      if max_error < error.error then
+        error_index = index
+        max_error = error.error
       end
+    end
+    err_node = errors[error_index]
 
-      predictors[pre_index].set_stocks(stocks[error_index], features[error_index], start_day, end_day)
-      max_error = 0
+    predictor.set_stocks(err_node.stock, err_node.features, start_day, end_day)
+    predictor.build_neural_net
+    train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
+    adjust_weight(index, get_delta(index))
+  end
+
+  def create_errors stocks, features
+    self.errors = Array.new(features.length, ErrorNode.new)
+    errors.each_with_index do |error, index|
+      error.stock = stocks[index]
+      error.error = 0
+      error.features = features[index]
     end
   end
 
@@ -94,4 +107,8 @@ class Boost
     end
     f_x
   end
+end
+
+class ErrorNode
+  attr_accessor :error, :features, :stock
 end
