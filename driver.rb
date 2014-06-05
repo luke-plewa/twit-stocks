@@ -6,8 +6,8 @@ require_relative 'lib/twit-stocks/boost.rb'
 
 puts "Starting to predict stocks..."
 
-start_day = "2014-05-20"
-end_day = "2014-05-30"  # during this split, apple's stock ris
+start_day = "2014-05-30"
+end_day = "2014-06-04"  # during this split, apple's stock ris
 
 start_day_2 = "2014-05-26"
 end_day_2 = "2014-06-01"  # during this split, time warner's stock fal
@@ -21,30 +21,30 @@ end_day_4 = "2014-06-02"  # during this split, gamestop's stock fal
 start_day_5 = "2014-06-03"
 end_day_5 = "2014-06-04"  # this split represents the past we
 
-learning_rate = 0.8
+learning_rate = 0.5
 expected_value = 1
-momentum_rate = 0.5
+momentum_rate = 0.3
 hidden_nodes = 20
 
-#stocks = [:AAPL, :AAPL, :AAPL, :AAPL, :GOOG, :GOOG, :ADBE, :BRCM, :BRCM, :TWX,
-#  :HAS, :HAS, :GME, :WYNN, :UA, :NFLX, :T, :CMCSK, :CMCSA, :CVX,
-#  :CSCO, :BA]
-#search_terms = ["apple", "iphone", "ipad", "macbook",
-#  "google", "googleglass", "adobe", "broadcom", "baseband", "time warner",
-#  "hasbro", "transformer", "gamestop", "wynn",
-#  "under armor", "netflix", "at&t", "comcast", "comcast", "chevron",
-#  "cisco", "boeing"
-#]
-
-stocks = [:AAPL, :GOOG, :ADBE, :BRCM, :TWX,
+stocks = [:AAPL, :AAPL, :AAPL, :AAPL, :GOOG, :ADBE, :BRCM, :BRCM, :TWX,
   :HAS, :GME, :WYNN, :UA, :NFLX, :T, :CMCSK, :CMCSA, :CVX,
   :CSCO, :BA]
-search_terms = ["apple",
-  "google", "adobe", "broadcom", "time warner",
+search_terms = ["apple", "iphone", "ipad", "macbook",
+  "googleglass", "adobe", "broadcom", "baseband", "time warner",
   "hasbro", "gamestop", "wynn",
   "under armor", "netflix", "at&t", "comcast", "comcast", "chevron",
   "cisco", "boeing"
 ]
+
+#stocks = [:AAPL, :GOOG, :ADBE, :BRCM, :TWX,
+#  :HAS, :GME, :WYNN, :UA, :NFLX, :T, :CMCSK, :CMCSA, :CVX,
+#  :CSCO, :BA]
+#search_terms = ["apple",
+#  "google", "adobe", "broadcom", "time warner",
+#  "hasbro", "gamestop", "wynn",
+#  "under armor", "netflix", "at&t", "comcast", "comcast", "chevron",
+#  "cisco", "boeing"
+#]
 
 boost = Boost.new(stocks.length)
 twitter = TwitterEngine.new
@@ -85,3 +85,4 @@ puts "predicting on #{ARGV[0]} with stock label #{ARGV[1]}"
 puts quotes
 puts "delta: " + delta.to_s
 puts "classification: " + result.to_s
+puts "discrete value: " + (result - 0.5).to_s

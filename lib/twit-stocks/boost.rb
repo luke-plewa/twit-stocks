@@ -1,4 +1,8 @@
 class Boost
+
+  ERROR_RATE = 0.2
+  SMALL_NUM = 0.0001
+
   attr_accessor :predictors, :num_predictors, :weights,
     :learning_rate, :errors, :samples
 
@@ -29,7 +33,10 @@ class Boost
   end
 
   def normalize_expected expected_value
-    if expected_value > 0 then 1 else 0 end
+    new_val = expected_value + 0.5
+    if new_val > 1 then new_val = 1 end
+    if new_val < 0 then new_val = 0 end
+    new_val
   end
 
   def train_neural_net index, expected_value, learning_rate, momentum_rate
@@ -48,7 +55,7 @@ class Boost
       end
     end
     if old_error_index == error_index then
-      return errors[next_best_error_index].error - 0.001
+      return errors[next_best_error_index].error - SMALL_NUM
     else
       return errors[old_error_index].error
     end
@@ -56,7 +63,7 @@ class Boost
 
   def adjust_weight index, expected_value, error_index
     error = error_func(predictors[index].hypothesis, normalize_expected(expected_value))
-    weights[index] = weights[index] * (1.0 - error)
+    weights[index] = weights[index] * (1.0 - error * ERROR_RATE)
     if errors[error_index].error == 0 then
       errors[error_index].error = error
     else
@@ -91,12 +98,9 @@ class Boost
       predictors[index].set_default_network_values(hidden_nodes)
       predictors[index].build_neural_net
       train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
+      train_neural_net(index, get_delta(index), learning_rate, momentum_rate)
       puts "stock: " + stocks[index].to_s
       adjust_weight(index, get_delta(index), index)
-    end
-
-    errors.each_with_index do |error, index|
-      puts index.to_s + " " + error.stock.to_s + " " + error.error.to_s
     end
 
     predictors.each_with_index do |predictor, index|

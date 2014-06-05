@@ -43,15 +43,17 @@ class TwitterEngine
 
   def get_tweets search_string, type
     # "mixed", "recent", and "popular". The current default is "mixed."
-    client.search(search_string, result_type: type).to_h
+    results = client.search(search_string, result_type: type)
   end
 
   def get_features tweets
     self.features = Array.new(FEATURES.length, 0)
-    tweets[:statuses].each_with_index do |tweet, index|
-      parse_tweet tweet[:text]
+    count = 0
+    tweets.each do |tweet|
+      parse_tweet tweet.text
+      count += 1
     end
-    features << tweets[:statuses].length
+    features << count
     features
   end
 

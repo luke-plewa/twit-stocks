@@ -46,7 +46,10 @@ class Predictor
   end
 
   def normalize_expected value
-    if value > 0 then 1 else 0 end
+    new_val = value + 0.5
+    if new_val > 1 then new_val = 1 end
+    if new_val < 0 then new_val = 0 end
+    new_val
   end
 
   def set_new_features search_term
